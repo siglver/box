@@ -1,1 +1,37 @@
+-- Script local para um jogo no Roblox
+-- Insira isso em um LocalScript em StarterPlayerScripts
 
+-- Serviços necessários
+local UserInputService = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Variável para armazenar o estado da tecla
+local isCtrlPressed = false
+
+-- Função para mostrar ou esconder a interface
+local function toggleScreen(show)
+    for _, gui in ipairs(playerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") then
+            gui.Enabled = show
+        end
+    end
+end
+
+-- Captura quando a tecla Ctrl é pressionada
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end -- Ignorar se o evento já foi processado
+
+    if input.KeyCode == Enum.KeyCode.LeftControl then
+        isCtrlPressed = true
+        toggleScreen(false) -- Esconde tudo da tela
+    end
+end)
+
+-- Captura quando a tecla Ctrl é solta
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.LeftControl then
+        isCtrlPressed = false
+        toggleScreen(true) -- Mostra tudo novamente
+    end
+end)
