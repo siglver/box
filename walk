@@ -1,0 +1,34 @@
+-- Script para andar devagar ao segurar Ctrl
+
+-- Variáveis
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Velocidades
+local normalWalkSpeed = 16 -- Velocidade normal
+local slowWalkSpeed = 8   -- Velocidade ao segurar Ctrl
+
+-- Conexão com o teclado
+local userInputService = game:GetService("UserInputService")
+
+-- Funções para ajustar a velocidade
+userInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.RightControl then
+        humanoid.WalkSpeed = slowWalkSpeed
+    end
+end)
+
+userInputService.InputEnded:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.RightControl then
+        humanoid.WalkSpeed = normalWalkSpeed
+    end
+end)
+
+-- Atualizar o personagem caso ele reapareça
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    humanoid = character:WaitForChild("Humanoid")
+end)
