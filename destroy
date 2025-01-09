@@ -1,0 +1,23 @@
+local UserInputService = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Função para verificar se a tecla Ctrl direito está pressionada
+local function isRightCtrlPressed()
+    return UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
+end
+
+-- Detecta o clique do mouse
+mouse.Button1Down:Connect(function()
+    -- Verifica se Ctrl direito está pressionado
+    if isRightCtrlPressed() then
+        -- Pega a parte do mundo onde o mouse está apontando
+        local targetPart = mouse.Target
+        
+        -- Verifica se o mouse está apontando para uma parte (bloco)
+        if targetPart then
+            -- Destroi a parte no local onde o mouse clicou
+            targetPart:Destroy()
+        end
+    end
+end)
