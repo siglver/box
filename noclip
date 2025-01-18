@@ -1,0 +1,119 @@
+local Workspace = game:GetService("Workspace")
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local Plr = Players.LocalPlayer
+local Clipon = false
+local Stepped
+
+-- Criando interface do noclip
+local Noclip = Instance.new("ScreenGui")
+local BG = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local Toggle = Instance.new("TextButton")
+local StatusPF = Instance.new("TextLabel")
+local Status = Instance.new("TextLabel")
+local Credit = Instance.new("TextLabel")
+
+Noclip.Name = "Noclip"
+Noclip.Parent = CoreGui
+
+BG.Name = "BG"
+BG.Parent = Noclip
+BG.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+BG.BorderColor3 = Color3.new(0.05, 0.05, 0.05)
+BG.BorderSizePixel = 2
+BG.Position = UDim2.new(0.15, 0, 0.82, 0)
+BG.Size = UDim2.new(0, 210, 0, 127)
+BG.Active = true
+BG.Draggable = true
+
+Title.Name = "Title"
+Title.Parent = BG
+Title.BackgroundColor3 = Color3.new(0.27, 0.0, 0.63)
+Title.BorderColor3 = Color3.new(0.18, 0.0, 0.43)
+Title.BorderSizePixel = 2
+Title.Size = UDim2.new(0, 210, 0, 33)
+Title.Font = Enum.Font.Highway
+Title.Text = "Noclip"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.TextSize = 30
+Title.TextStrokeColor3 = Color3.new(0.18, 0.0, 0.43)
+Title.TextStrokeTransparency = 0
+
+Toggle.Name = "Toggle"
+Toggle.Parent = BG
+Toggle.BackgroundColor3 = Color3.new(0.27, 0.0, 0.63)
+Toggle.BorderColor3 = Color3.new(0.18, 0.0, 0.43)
+Toggle.BorderSizePixel = 2
+Toggle.Position = UDim2.new(0.15, 0, 0.37, 0)
+Toggle.Size = UDim2.new(0, 146, 0, 36)
+Toggle.Font = Enum.Font.Highway
+Toggle.Text = "Toggle"
+Toggle.TextColor3 = Color3.new(1, 1, 1)
+Toggle.TextSize = 25
+Toggle.TextStrokeColor3 = Color3.new(0.18, 0.0, 0.43)
+Toggle.TextStrokeTransparency = 0
+
+StatusPF.Name = "StatusPF"
+StatusPF.Parent = BG
+StatusPF.BackgroundColor3 = Color3.new(1, 1, 1)
+StatusPF.BackgroundTransparency = 1
+StatusPF.Position = UDim2.new(0.31, 0, 0.71, 0)
+StatusPF.Size = UDim2.new(0, 56, 0, 20)
+StatusPF.Font = Enum.Font.Highway
+StatusPF.Text = "Status:"
+StatusPF.TextColor3 = Color3.new(1, 1, 1)
+StatusPF.TextSize = 20
+StatusPF.TextStrokeColor3 = Color3.new(0.33, 0.33, 0.33)
+StatusPF.TextStrokeTransparency = 0
+
+Status.Name = "Status"
+Status.Parent = BG
+Status.BackgroundColor3 = Color3.new(1, 1, 1)
+Status.BackgroundTransparency = 1
+Status.Position = UDim2.new(0.58, 0, 0.71, 0)
+Status.Size = UDim2.new(0, 56, 0, 20)
+Status.Font = Enum.Font.Highway
+Status.Text = "off"
+Status.TextColor3 = Color3.new(0.66, 0, 0)
+Status.TextSize = 14
+Status.TextXAlignment = Enum.TextXAlignment.Left
+
+Credit.Name = "Credit"
+Credit.Parent = BG
+Credit.BackgroundColor3 = Color3.new(1, 1, 1)
+Credit.BackgroundTransparency = 1
+Credit.Position = UDim2.new(0.19, 0, 0.87, 0)
+Credit.Size = UDim2.new(0, 128, 0, 17)
+Credit.Font = Enum.Font.SourceSans
+Credit.Text = "Created by siglver"
+Credit.TextColor3 = Color3.new(1, 1, 1)
+Credit.TextSize = 16
+Credit.TextStrokeColor3 = Color3.new(0.2, 0.2, 0.2)
+
+-- Função para alternar o noclip
+Toggle.MouseButton1Click:Connect(function()
+    if Clipon == false then
+        Clipon = true
+        Status.Text = "on"
+        Status.TextColor3 = Color3.new(0, 1, 0)
+
+        Stepped = RunService.Stepped:Connect(function()
+            if Clipon then
+                for _, v in pairs(Plr.Character:GetDescendants()) do
+                    if v:IsA("BasePart") then
+                        v.CanCollide = false
+                    end
+                end
+            else
+                Stepped:Disconnect()
+            end
+        end)
+    else
+        Clipon = false
+        Status.Text = "off"
+        Status.TextColor3 = Color3.new(1, 0, 0)
+    end
+end)
