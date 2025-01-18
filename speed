@@ -1,0 +1,31 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local Plr = Players.LocalPlayer
+local OriginalWalkSpeed = 25 -- Velocidade padrão do personagem
+local SpeedMultiplier = 7 -- Multiplicador de velocidade
+local SpeedEnabled = false
+
+-- Função para ativar a super velocidade
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        SpeedEnabled = true
+        local humanoid = Plr.Character and Plr.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = OriginalWalkSpeed * SpeedMultiplier
+        end
+    end
+end)
+
+-- Função para desativar a super velocidade
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        SpeedEnabled = false
+        local humanoid = Plr.Character and Plr.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = OriginalWalkSpeed
+        end
+    end
+end)
