@@ -1,0 +1,82 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local highlightTemplate = Instance.new("Highlight")
+highlightTemplate.Name = "Highlight"
+
+local highlightEnabled = false -- Variável para controlar se o highlight está ativado ou desativado
+
+-- Função para aplicar o highlight ao personagem de um jogador
+local function applyHighlightToCharacter(character)
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+        if not humanoidRootPart:FindFirstChild("Highlight") then
+            local highlightClone = highlightTemplate:Clone()
+            highlightClone.Adornee = character
+            highlightClone.Parent = humanoidRootPart
+            highlightClone.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+            highlightClone.Name = "Highlight"
+        end
+    end
+end
+
+-- Função para remover o highlight de um personagem
+local function removeHighlightFromCharacter(character)
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local highlight = character.HumanoidRootPart:FindFirstChild("Highlight")
+        if highlight then
+            highlight:Destroy()
+        end
+    end
+end
+
+-- Ativa ou desativa o highlight para todos os jogadores
+local function toggleHighlight()
+    highlightEnabled = not highlightEnabled
+    for _, player in pairs(Players:GetPlayers()) do
+        repeat wait() until player.Character
+        if highlightEnabled then
+            applyHighlightToCharacter(player.Character)
+        else
+            removeHighlightFromCharacter(player.Character)
+        end
+    end
+end
+
+-- Verifica se a tecla 2 do Numpad foi pressionada
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if gameProcessedEvent then return end -- Ignora se o jogo já processou o evento (ex: pressionamento de tecla no chat)
+
+    if input.UserInputType == Enum.UserInputType.Keyboard then
+        -- Verifica se a tecla pressionada é a tecla 2 do Numpad
+        if input.KeyCode == Enum.KeyCode.KeypadTwo then
+            -- Evitar múltiplos acionamentos enquanto a tecla está pressionada
+            toggleHighlight()
+        end
+    end
+end)
+
+-- Aplicar ou remover highlight para jogadores já presentes no jogo (somente uma vez, não com cada frame)
+for _, player in pairs(Players:GetPlayers()) do
+    repeat wait() until player.Character
+    if highlightEnabled then
+        applyHighlightToCharacter(player.Character)
+    end
+end
+
+-- Quando um novo jogador entra, aplica o highlight se estiver ativado
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        if highlightEnabled then
+            applyHighlightToCharacter(character)
+        end
+    end)
+end)
+
+-- Quando um jogador sai, remove o highlight
+Players.PlayerRemoving:Connect(function(player)
+    local character = player.Character
+    if character then
+        removeHighlightFromCharacter(character)
+    end
+end)
