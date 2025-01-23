@@ -1,0 +1,19 @@
+-- Detecta a entrada do teclado (Numpad 7)
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Função para resetar o personagem como o botão de reset
+local function resetCharacter()
+    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.Health = 0 -- Define a saúde como 0 para acionar o reset padrão
+    end
+end
+
+-- Escuta a tecla Numpad 7
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.KeypadSeven then
+        resetCharacter()
+    end
+end)
