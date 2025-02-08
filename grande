@@ -1,5 +1,5 @@
 -- Variáveis locais para controle de estado e tamanho
-local HeadSize = 22.5  -- Metade do tamanho original
+local HeadSize = 45  -- Metade do tamanho original
 local Disabled = true  -- O script começa desativado
 
 -- Tabela para armazenar os estados originais dos jogadores
