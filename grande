@@ -1,0 +1,68 @@
+-- Variável com o novo tamanho para o HumanoidRootPart
+local novoTamanho = Vector3.new(50, 50, 50)
+local desativado = true  -- Começa desativado
+
+-- Tabela para armazenar o tamanho original de cada jogador
+local tamanhosOriginais = {}
+
+-- Função que altera apenas o tamanho do HumanoidRootPart
+local function alterarTamanho(player, tamanho)
+    pcall(function()
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.Size = tamanho
+        end
+    end)
+end
+
+-- Função que armazena o tamanho original do HumanoidRootPart
+local function armazenarTamanhoOriginal(player)
+    pcall(function()
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            tamanhosOriginais[player] = hrp.Size
+        end
+    end)
+end
+
+-- Função que restaura o tamanho original do HumanoidRootPart
+local function restaurarTamanhoOriginal(player)
+    pcall(function()
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp and tamanhosOriginais[player] then
+            hrp.Size = tamanhosOriginais[player]
+        end
+    end)
+end
+
+-- Função que alterna o estado do script (ativa/desativa)
+local function alternarEstado()
+    desativado = not desativado
+    if desativado then
+        print("Script desativado!")
+        -- Restaura o tamanho original para todos os jogadores (exceto o LocalPlayer)
+        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+            if player ~= game:GetService("Players").LocalPlayer and player.Character then
+                restaurarTamanhoOriginal(player)
+            end
+        end
+    else
+        print("Script ativado!")
+        -- Armazena o tamanho original e altera para o novo tamanho para todos os jogadores (exceto o LocalPlayer)
+        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+            if player ~= game:GetService("Players").LocalPlayer and player.Character then
+                armazenarTamanhoOriginal(player)
+                alterarTamanho(player, novoTamanho)
+            end
+        end
+    end
+end
+
+-- Detecta o pressionamento da tecla Control (LeftControl) para alternar o estado
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessedEvent)
+    if input.UserInputType == Enum.UserInputType.Keyboard and 
+       input.KeyCode == Enum.KeyCode.LeftControl and 
+       not gameProcessedEvent then
+        alternarEstado()
+    end
+end)
