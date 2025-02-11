@@ -1,0 +1,87 @@
+-- Variáveis locais para controle de estado e tamanho
+local HeadSize = 32.5  -- Metade do tamanho original
+local Disabled = true  -- O script começa desativado
+
+-- Tabela para armazenar os estados originais dos jogadores
+local originalStates = {}
+
+-- Função que altera as propriedades do HumanoidRootPart
+local function alterarHitbox(player, size, transparency, color, material, canCollide)
+    pcall(function()
+        local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+        if humanoidRootPart then
+            humanoidRootPart.Size = size
+            humanoidRootPart.Transparency = transparency
+            humanoidRootPart.BrickColor = BrickColor.new(color)
+            humanoidRootPart.Material = material
+            humanoidRootPart.CanCollide = canCollide
+        end
+    end)
+end
+
+-- Função que armazena o estado original das propriedades
+local function armazenarEstadoOriginal(player)
+    pcall(function()
+        local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+        if humanoidRootPart then
+            -- Armazenar o estado original
+            originalStates[player] = {
+                size = humanoidRootPart.Size,
+                transparency = humanoidRootPart.Transparency,
+                color = humanoidRootPart.BrickColor,
+                material = humanoidRootPart.Material,
+                canCollide = humanoidRootPart.CanCollide
+            }
+        end
+    end)
+end
+
+-- Função que restaura o estado original das propriedades
+local function restaurarEstadoOriginal(player)
+    pcall(function()
+        local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+        if humanoidRootPart and originalStates[player] then
+            -- Restaurar o estado original
+            humanoidRootPart.Size = originalStates[player].size
+            humanoidRootPart.Transparency = originalStates[player].transparency
+            humanoidRootPart.BrickColor = originalStates[player].color
+            humanoidRootPart.Material = originalStates[player].material
+            humanoidRootPart.CanCollide = originalStates[player].canCollide
+        end
+    end)
+end
+
+-- Função que alterna o estado de Disabled e ativa/desativa o efeito
+local function alternarEstado()
+    Disabled = not Disabled  -- Alterna entre desativado e ativado
+    if Disabled then
+        print("Script desativado!")
+        -- Quando desativado, restaura as hitboxes de todos os jogadores para o estado original
+        for _, player in pairs(game:GetService('Players'):GetPlayers()) do
+            if player.Character then
+                restaurarEstadoOriginal(player)
+            end
+        end
+    else
+        print("Script ativado!")
+        -- Quando ativado, armazena o estado original e altera a hitbox dos outros jogadores (não altera a do LocalPlayer)
+        for _, player in pairs(game:GetService('Players'):GetPlayers()) do
+            if player.Name ~= game:GetService('Players').LocalPlayer.Name and player.Character then
+                armazenarEstadoOriginal(player)  -- Armazena o estado original
+                alterarHitbox(player, Vector3.new(HeadSize, HeadSize, HeadSize), 0.7, "Really black", "Neon", false)
+            end
+        end
+    end
+end
+
+-- Detecta o pressionamento da tecla Alt (ao invés de Ctrl)
+game:GetService('UserInputService').InputBegan:Connect(function(input, gameProcessedEvent)
+    if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.LeftAlt and not gameProcessedEvent then
+        alternarEstado()  -- Alterna o estado quando a tecla Alt for pressionada
+    end
+end)
+
+-- Inicialmente, o script está desativado, logo, nada acontece no RenderStepped até que o Alt seja pressionado
+game:GetService('RunService').RenderStepped:Connect(function()
+    -- Não há necessidade de modificar nada aqui, o alternarEstado já cuida de tudo
+end)
